@@ -1,0 +1,19 @@
+{
+	"name": "OrdersBlobsToDelete",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "@concat(pipeline().RunId,'.json')",
+				"folderPath": "Test",
+				"container": "containertest"
+			}
+		}
+	}
+}
