@@ -29,25 +29,15 @@
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "JsonSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "JsonWriteSettings"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
@@ -57,7 +47,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "TextFileContainingJsonLines",
+						"referenceName": "BlobJsonFile",
 						"type": "DatasetReference"
 					}
 				]
@@ -83,31 +73,31 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n        id=a.IdCantiere,\n        IdAppalto,\n        [Data],\n        Descrizione,\n        Pioggia,\n        OreAutocarro,\n        UserId,\n        (select IdOre, IdPersona, Ore from dbo.CantiereOre B where B.IdCantiere=A.IdCantiere for JSON AUTO) as Orecantiere\n    FROM dbo.Cantiere A FOR JSON PATH )\n)",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "JsonSink",
+						"type": "JsonSource",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
-							"type": "JsonWriteSettings"
+							"type": "JsonReadSettings"
 						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
 					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTable1",
+						"referenceName": "BlobJsonFile",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "BlobJsonFile",
+						"referenceName": "CosmosDbSqlApiCollection1",
 						"type": "DatasetReference"
 					}
 				]
