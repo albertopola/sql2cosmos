@@ -1,5 +1,5 @@
 {
-	"name": "TextFileContainingJsnLines",
+	"name": "TextFileContainingJsonLines",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage1",
