@@ -1,0 +1,9 @@
+{
+	"name": "archeadatafactory",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "124c8493-a58b-4170-936a-de4bf347771f",
+		"tenantId": "dbff32fb-2489-4234-a379-d8180d50eaf0"
+	}
+}
