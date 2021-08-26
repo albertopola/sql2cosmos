@@ -81,7 +81,7 @@
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"wildcardFolderPath": "Test",
-							"wildcardFileName": "Concat",
+							"wildcardFileName": "@concat(pipeline().RunId,'.json')",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
