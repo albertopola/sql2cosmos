@@ -1,0 +1,20 @@
+{
+	"name": "BlobJsonFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "@Concat().RunId,'.json')",
+				"folderPath": "Test",
+				"container": "containertest"
+			}
+		},
+		"schema": {}
+	}
+}
