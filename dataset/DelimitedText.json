@@ -1,6 +1,7 @@
 {
-	"name": "DelimitedText1",
+	"name": "DelimitedText",
 	"properties": {
+		"description": "TextFileContainingJsnLines",
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage1",
 			"type": "LinkedServiceReference"
