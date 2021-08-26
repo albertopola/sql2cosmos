@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@concat(pipeline().RunId,'.json')",
 				"folderPath": "Test",
 				"container": "containertest"
 			}
