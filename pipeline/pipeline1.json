@@ -79,7 +79,7 @@
 						"type": "JsonSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
+							"fileListPath": "containertest",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
