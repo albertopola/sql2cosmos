@@ -83,15 +83,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n        id=a.IdCantiere,\n        IdAppalto,\n        [Data],\n        Descrizione,\n        Pioggia,\n        OreAutocarro,\n        UserId,\n        (select IdOre, IdPersona, Ore from dbo.CantiereOre B where B.IdCantiere=A.IdCantiere for JSON AUTO) as Orecantiere\n    FROM dbo.Cantiere A FOR JSON PATH )\n)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "CosmosDbSqlApiSink",
@@ -101,7 +96,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "TextFileContainingJsonLines",
+						"referenceName": "AzureSqlTable1",
 						"type": "DatasetReference"
 					}
 				],
