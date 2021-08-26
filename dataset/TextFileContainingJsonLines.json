@@ -9,7 +9,10 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation"
+				"type": "AzureBlobStorageLocation",
+				"fileName": "TextFileContainingJsonLines",
+				"folderPath": "Test",
+				"container": "containertest"
 			},
 			"columnDelimiter": "\t",
 			"escapeChar": "\\",
