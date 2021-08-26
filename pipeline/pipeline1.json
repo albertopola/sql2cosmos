@@ -89,8 +89,13 @@
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "CosmosDbSqlApiSink",
-						"writeBehavior": "insert"
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
 					},
 					"enableStaging": false
 				},
@@ -102,7 +107,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbSqlApiCollection1",
+						"referenceName": "BlobJsonFile",
 						"type": "DatasetReference"
 					}
 				]
