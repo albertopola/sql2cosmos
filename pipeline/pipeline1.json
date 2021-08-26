@@ -79,7 +79,9 @@
 						"type": "JsonSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
-							"fileListPath": "containertest",
+							"recursive": true,
+							"wildcardFolderPath": "Test",
+							"wildcardFileName": "Concat",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
