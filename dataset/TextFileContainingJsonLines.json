@@ -10,11 +10,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@concat(pipeline().RunId,'.json')",
+				"fileName": {
+					"value": "@concat(pipeline().RunId,'.json')",
+					"type": "Expression"
+				},
 				"folderPath": "Test",
 				"container": "containertest"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\t",
 			"escapeChar": "\\",
 			"quoteChar": ""
 		},
