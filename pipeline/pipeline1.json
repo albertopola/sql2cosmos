@@ -50,7 +50,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTable1",
+						"referenceName": "AzureSql",
 						"type": "DatasetReference"
 					}
 				],
