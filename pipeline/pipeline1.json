@@ -5,14 +5,7 @@
 			{
 				"name": "SqlJsonToBlobText",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "BlobsToDelete",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -111,31 +104,6 @@
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "BlobsToDelete",
-				"type": "Delete",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "OrdersBlobsToDelete",
-						"type": "DatasetReference"
-					},
-					"enableLogging": false,
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"recursive": true,
-						"enablePartitionDiscovery": false
-					}
-				}
 			}
 		],
 		"annotations": []
