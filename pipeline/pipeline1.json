@@ -24,7 +24,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n        id=a.IdCantiere,\n        IdAppalto,\n        [Data],\n        Descrizione,\n        Pioggia,\n        OreAutocarro,\n        UserId,\n        (select IdOre, IdPersona, Ore from dbo.CantiereOre B where B.IdCantiere=A.IdCantiere for JSON AUTO) as Orecantiere\n    FROM dbo.Cantiere A FOR JSON PATH )\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -93,21 +92,11 @@
 							"type": "JsonReadSettings"
 						}
 					},
-					"sink": {
-						"type": "CosmosDbSqlApiSink",
-						"writeBehavior": "insert"
-					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
 						"referenceName": "BlobJsonFile",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CosmosDbSqlApiCollection1",
 						"type": "DatasetReference"
 					}
 				]
