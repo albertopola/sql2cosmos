@@ -18,6 +18,7 @@
 				"container": "containertest"
 			},
 			"columnDelimiter": "\t",
+			"rowDelimiter": "",
 			"escapeChar": "\\",
 			"quoteChar": ""
 		},
