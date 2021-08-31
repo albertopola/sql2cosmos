@@ -9,7 +9,7 @@
 		"type": "CosmosDbSqlApiCollection",
 		"schema": {},
 		"typeProperties": {
-			"collectionName": "Import_Cantieri_Test"
+			"collectionName": "T_Cantieri"
 		}
 	}
 }
