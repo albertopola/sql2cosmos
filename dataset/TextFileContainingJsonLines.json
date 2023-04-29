@@ -14,7 +14,7 @@
 					"value": "@concat(pipeline().RunId,'.json')",
 					"type": "Expression"
 				},
-				"folderPath": "Test",
+				"folderPath": "test",
 				"container": "containertest"
 			},
 			"columnDelimiter": "\t",
