@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n\tid=newid(),\n\tmodelname='staff',\n\t[name]=o.Persona,\n\tisactive = o.Operativo,\n\tisinternal = o.Interno,\n\tcf=o.CF,\n\tbirthdate=o.DataNascita,\n\tbirthplace=o.LuogoNascita,\n\ttel=o.Telefono,\n\tmobile=o.Cellulare,\n\t[address]=o.Indirizzo,\n\tcity=o.Comune,\n\tregion=o.Provincia,\n\tzip=o.CAP\n   FROM CantierePersone o FOR JSON PATH)\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n\tmodelname='staff',\n\t[name]=o.Persona,\n\tisactive = o.Operativo,\n\tisinternal = o.Interno,\n\tcf=o.CF,\n\tbirthdate=o.DataNascita,\n\tbirthplace=o.LuogoNascita,\n\ttel=o.Telefono,\n\tmobile=o.Cellulare,\n\t[address]=o.Indirizzo,\n\tcity=o.Comune,\n\tregion=o.Provincia,\n\tzip=o.CAP\n   FROM CantierePersone o FOR JSON PATH)\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -88,7 +88,7 @@
 					},
 					"sink": {
 						"type": "CosmosDbSqlApiSink",
-						"writeBehavior": "upsert",
+						"writeBehavior": "insert",
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false
