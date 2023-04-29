@@ -13,7 +13,9 @@
 				"fileName": {
 					"value": "@concat(pipeline().RunId,'.json')",
 					"type": "Expression"
-				}
+				},
+				"folderPath": "test",
+				"container": "containertest"
 			}
 		},
 		"schema": {}
