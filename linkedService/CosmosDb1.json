@@ -5,8 +5,8 @@
 		"annotations": [],
 		"type": "CosmosDb",
 		"typeProperties": {
-			"connectionString": "AccountEndpoint=https://archeacosmosdb.documents.azure.com:443/;Database=archea;",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkFSQ0hFQURBVEFGQUNUT1JZXzM4NzExMzFjLTY0ZGMtNDlmMS1iNDU1LWQ5NGEwZmVmMTRjYiINCn0="
+			"connectionString": "AccountEndpoint=https://archeacosmosdb.documents.azure.com:443/;Database=IT01881500175;",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDBEOTg4MzhCLTQxNUYtNDk4Ni04NDU0LUFDNEUzOUJBMDEyMF9lYjEwZDYxNy1jZWE3LTRjMGEtYjcwZS0xOTBmN2UzNTNiN2IiDQp9"
 		}
 	}
 }
