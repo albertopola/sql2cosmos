@@ -1,0 +1,194 @@
+{
+	"name": "CopyPipeline_qgm",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_qgm",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "arc.T_Anagrafica"
+					},
+					{
+						"name": "Destination",
+						"value": "Container002"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "IdAnagrafica",
+									"type": "Int32"
+								},
+								"sink": {
+									"path": "$['anagraficaid']"
+								}
+							},
+							{
+								"source": {
+									"name": "Denominazione",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['name']"
+								}
+							},
+							{
+								"source": {
+									"name": "Indirizzo",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['address']"
+								}
+							},
+							{
+								"source": {
+									"name": "CAP",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['zip']"
+								}
+							},
+							{
+								"source": {
+									"name": "Citta",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['city']"
+								}
+							},
+							{
+								"source": {
+									"name": "Provincia",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['region']"
+								}
+							},
+							{
+								"source": {
+									"name": "CF",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['cf']"
+								}
+							},
+							{
+								"source": {
+									"name": "PIVA",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['piva']"
+								}
+							},
+							{
+								"source": {
+									"name": "Tel",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['tel']"
+								}
+							},
+							{
+								"source": {
+									"name": "FAX",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['fax']"
+								}
+							},
+							{
+								"source": {
+									"name": "email",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['email']"
+								}
+							},
+							{
+								"source": {
+									"name": "CodAnacf",
+									"type": "Int32"
+								},
+								"sink": {
+									"path": "$['codanacf']"
+								}
+							},
+							{
+								"source": {
+									"name": "Fornitore",
+									"type": "Boolean"
+								},
+								"sink": {
+									"path": "$['fornitore']"
+								}
+							},
+							{
+								"source": {
+									"name": "Cliente",
+									"type": "Boolean"
+								},
+								"sink": {
+									"path": "$['cliente']"
+								}
+							},
+							{
+								"source": {
+									"name": "Ente",
+									"type": "Boolean"
+								},
+								"sink": {
+									"path": "$['ente']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_qgm",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_qgm",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

@@ -1,0 +1,51 @@
+{
+	"name": "DestinationDataset_qgm",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CosmosDb1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"modelname": {
+					"type": "string"
+				},
+				"datacantiere": {
+					"type": "string"
+				},
+				"commessa": {
+					"type": "integer"
+				},
+				"descrizionecommessa": {
+					"type": "string"
+				},
+				"staffwork": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"idstaff": {
+								"type": "null"
+							},
+							"staffeffort": {
+								"type": "number"
+							},
+							"Staffs": {
+								"type": "null"
+							}
+						}
+					}
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "Container002"
+		}
+	}
+}
