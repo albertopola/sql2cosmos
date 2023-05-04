@@ -26,6 +26,12 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "modelname",
+								"value": "t_anagrafica"
+							}
+						],
 						"partitionOption": "None"
 					},
 					"sink": {
