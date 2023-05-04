@@ -1,0 +1,43 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SourceDataset_qgm",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          IdAnagrafica as integer,",
+				"          Denominazione as string,",
+				"          Indirizzo as string,",
+				"          CAP as string,",
+				"          Citta as string,",
+				"          Provincia as string,",
+				"          CF as string,",
+				"          PIVA as string,",
+				"          Tel as string,",
+				"          FAX as string,",
+				"          email as string,",
+				"          CodAnacf as integer,",
+				"          Fornitore as boolean,",
+				"          Cliente as boolean,",
+				"          Ente as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: '',",
+				"     format: 'query') ~> source1"
+			]
+		}
+	}
+}
