@@ -13,7 +13,14 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          IdAnagrafica as integer,",
@@ -35,8 +42,29 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: '',",
-				"     format: 'query') ~> source1"
+				"     format: 'table') ~> source1",
+				"source1 select(mapColumn(",
+				"          IdAnagrafica,",
+				"          Denominazione,",
+				"          Indirizzo,",
+				"          CAP,",
+				"          Citta,",
+				"          Provincia,",
+				"          CF,",
+				"          PIVA,",
+				"          Tel,",
+				"          FAX,",
+				"          email,",
+				"          CodAnacf,",
+				"          Fornitore,",
+				"          Cliente,",
+				"          Ente,",
+				"          each(match(Id),",
+				"               id = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(id = iif(isNull(id), toString(newGuid()), id)) ~> derivedColumn1"
 			]
 		}
 	}
