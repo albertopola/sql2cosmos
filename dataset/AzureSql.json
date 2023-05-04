@@ -9,8 +9,8 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "dbo",
-			"table": "CantierePersone"
+			"schema": "arc",
+			"table": "T_Appalti"
 		}
 	}
 }
