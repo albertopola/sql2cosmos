@@ -6,65 +6,48 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "SourceDataset_qgm",
+						"referenceName": "AzureSql",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbSqlApiCollection1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "derivedColumn1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
-				"source(output(",
-				"          IdAnagrafica as integer,",
-				"          Denominazione as string,",
-				"          Indirizzo as string,",
-				"          CAP as string,",
-				"          Citta as string,",
-				"          Provincia as string,",
-				"          CF as string,",
-				"          PIVA as string,",
-				"          Tel as string,",
-				"          FAX as string,",
-				"          email as string,",
-				"          CodAnacf as integer,",
-				"          Fornitore as boolean,",
-				"          Cliente as boolean,",
-				"          Ente as boolean",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"source1 select(mapColumn(",
-				"          IdAnagrafica,",
-				"          Denominazione,",
-				"          Indirizzo,",
-				"          CAP,",
-				"          Citta,",
-				"          Provincia,",
-				"          CF,",
-				"          PIVA,",
-				"          Tel,",
-				"          FAX,",
-				"          email,",
-				"          CodAnacf,",
-				"          Fornitore,",
-				"          Cliente,",
-				"          Ente,",
-				"          each(match(Id),",
-				"               id = $$)",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
+				"     query: 'SELECT modelname=\\'t_anagrafica\\' \\r\\n      ,[IdAnagrafica] as anagraficaid\\r\\n      ,[Denominazione] as name\\r\\n      ,[Indirizzo] as address\\r\\n      ,[CAP] as zip\\r\\n      ,[Citta] as city\\r\\n      ,[Provincia] as region\\r\\n      ,[CF] as cf\\r\\n      ,[PIVA] as piva\\r\\n      ,[Tel] as tel\\r\\n      ,[FAX] as fax\\r\\n      ,[email] as email\\r\\n      ,[CodAnacf] as codanacf\\r\\n      ,[Fornitore] as fornitore\\r\\n      ,[Cliente] as cliente\\r\\n      ,[Ente] as ente\\r\\n  FROM [arc].[T_Anagrafica]',",
+				"     format: 'query',",
+				"     partitionBy('roundRobin', 2)) ~> source1",
+				"select1 derive(id = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"source1 select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(id = iif(isNull(id), toString(newGuid()), id)) ~> derivedColumn1"
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'document',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
