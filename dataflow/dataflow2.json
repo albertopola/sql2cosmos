@@ -1,0 +1,72 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbSqlApiCollection1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "CosmosDbSqlApiCollection1",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT modelname=\\'t_anagrafica\\' \\r\\n      ,[IdAnagrafica] as anagraficaid\\r\\n      ,[Denominazione] as name\\r\\n      ,[Indirizzo] as address\\r\\n      ,[CAP] as zip\\r\\n      ,[Citta] as city\\r\\n      ,[Provincia] as region\\r\\n      ,[CF] as cf\\r\\n      ,[PIVA] as piva\\r\\n      ,[Tel] as tel\\r\\n      ,[FAX] as fax\\r\\n      ,[email] as email\\r\\n      ,[CodAnacf] as codanacf\\r\\n      ,[Fornitore] as fornitore\\r\\n      ,[Cliente] as cliente\\r\\n      ,[Ente] as ente\\r\\n  FROM [arc].[T_Anagrafica]',",
+				"     format: 'query') ~> source1",
+				"source1 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1 derive(column1 = ERROR_FUNCTION(''),",
+				"          each(match(toString(uuid())), ERROR_FUNCTION('') = ERROR_FUNCTION(''))) ~> derivedColumn1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'document',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2) ~> sink1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'document',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sink2"
+			]
+		}
+	}
+}
