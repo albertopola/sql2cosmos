@@ -1,0 +1,26 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT modelname=\\'t_anagrafica\\' \\n      ,[IdAnagrafica] as anagraficaid\\n      ,[Denominazione] as name\\n      ,[Indirizzo] as address\\n      ,[CAP] as zip\\n      ,[Citta] as city\\n      ,[Provincia] as region\\n      ,[CF] as cf\\n      ,[PIVA] as piva\\n      ,[Tel] as tel\\n      ,[FAX] as fax\\n      ,[email] as email\\n      ,[CodAnacf] as codanacf\\n      ,[Fornitore] as fornitore\\n      ,[Cliente] as cliente\\n      ,[Ente] as ente\\n  FROM [arc].[T_Anagrafica]',",
+				"     format: 'query') ~> source1"
+			]
+		}
+	}
+}
