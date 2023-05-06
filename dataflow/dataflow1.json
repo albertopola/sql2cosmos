@@ -27,6 +27,10 @@
 				},
 				{
 					"name": "union1"
+				},
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
 				}
 			],
 			"scriptLines": [
@@ -37,7 +41,23 @@
 				"     format: 'query') ~> source1",
 				"source1 derive(id = toString(uuid())) ~> derivedColumn1",
 				"derivedColumn1, source1 union(byName: true)~> union1",
-				"union1 sink(allowSchemaDrift: true,",
+				"union1 derive(modelname = toString(byName('modelname')),",
+				"          anagraficaid = toInteger(byName('anagraficaid')),",
+				"          name = toString(byName('name')),",
+				"          address = toString(byName('address')),",
+				"          zip = toString(byName('zip')),",
+				"          city = toString(byName('city')),",
+				"          region = toString(byName('region')),",
+				"          cf = toString(byName('cf')),",
+				"          piva = toString(byName('piva')),",
+				"          tel = toString(byName('tel')),",
+				"          fax = toString(byName('fax')),",
+				"          email = toString(byName('email')),",
+				"          codanacf = toInteger(byName('codanacf')),",
+				"          fornitore = toBoolean(byName('fornitore')),",
+				"          cliente = toBoolean(byName('cliente')),",
+				"          ente = toBoolean(byName('ente'))) ~> MapDrifted1",
+				"MapDrifted1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
