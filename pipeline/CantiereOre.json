@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n    modelname='cantiere',\n    o.idAppalto,\n    o.[Data] as DataCantiere,\n    o.Descrizione,\n    o.Pioggia,\n    o.OreAutocarro,\n    o.UserId,\n    (select IdOre, IdPersona, Ore from CantiereOre od where od.IdCantiere = o.IdCantiere for json auto) as OreUomo\n   FROM Cantiere o FOR JSON PATH)\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON((SELECT modelname='cantiere',o.idAppalto,o.[Data] as DataCantiere,o.Descrizione,o.Pioggia,o.OreAutocarro,o.UserId,(select IdOre,IdPersona,Ore from CantiereOre od where od.IdCantiere = o.IdCantiere for json auto) as OreUomo FROM Cantiere o FOR JSON PATH)\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -27,7 +27,8 @@
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "JsonWriteSettings"
+							"type": "JsonWriteSettings",
+							"filePattern": "setOfObjects"
 						}
 					},
 					"enableStaging": false
