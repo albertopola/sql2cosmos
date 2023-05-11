@@ -1,0 +1,43 @@
+{
+	"name": "CantierePersone_Flow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT\\r\\n     modelname=\\'staff\\',\\r\\n     [name]=o.Persona,\\r\\n     isactive = o.Operativo,\\r\\n     isinternal = o.Interno,\\r\\n     cf=o.CF,\\r\\n     birthdate=o.DataNascita,\\r\\n     birthplace=o.LuogoNascita,\\r\\n     tel=o.Telefono,\\r\\n     mobile=o.Cellulare,\\r\\n     [address]=o.Indirizzo,\\r\\n     city=o.Comune,\\r\\n     region=o.Provincia,\\r\\n     zip=o.CAP\\r\\n   FROM CantierePersone',",
+				"     format: 'query') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'document',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
