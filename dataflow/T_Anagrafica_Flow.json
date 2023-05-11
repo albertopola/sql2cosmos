@@ -21,39 +21,14 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [
-				{
-					"name": "derivedColumn1"
-				},
-				{
-					"name": "MapDrifted1",
-					"description": "Creates an explicit mapping for each drifted column"
-				}
-			],
+			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'SELECT modelname=\\'t_anagrafica\\' \\n      ,[IdAnagrafica] as anagraficaid\\n      ,[Denominazione] as name\\n      ,[Indirizzo] as address\\n      ,[CAP] as zip\\n      ,[Citta] as city\\n      ,[Provincia] as region\\n      ,[CF] as cf\\n      ,[PIVA] as piva\\n      ,[Tel] as tel\\n      ,[FAX] as fax\\n      ,[email] as email\\n      ,[CodAnacf] as codanacf\\n      ,[Fornitore] as fornitore\\n      ,[Cliente] as cliente\\n      ,[Ente] as ente\\n  FROM [arc].[T_Anagrafica]',",
 				"     format: 'query') ~> source1",
-				"source1 derive(id = uuid()) ~> derivedColumn1",
-				"derivedColumn1 derive(modelname = toString(byName('modelname')),",
-				"          anagraficaid = toInteger(byName('anagraficaid')),",
-				"          name = toString(byName('name')),",
-				"          address = toString(byName('address')),",
-				"          zip = toString(byName('zip')),",
-				"          city = toString(byName('city')),",
-				"          region = toString(byName('region')),",
-				"          cf = toString(byName('cf')),",
-				"          piva = toString(byName('piva')),",
-				"          tel = toString(byName('tel')),",
-				"          fax = toString(byName('fax')),",
-				"          email = toString(byName('email')),",
-				"          codanacf = toInteger(byName('codanacf')),",
-				"          fornitore = toBoolean(byName('fornitore')),",
-				"          cliente = toBoolean(byName('cliente')),",
-				"          ente = toBoolean(byName('ente'))) ~> MapDrifted1",
-				"MapDrifted1 sink(allowSchemaDrift: true,",
+				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
