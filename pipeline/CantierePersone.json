@@ -21,17 +21,6 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
 					"enableStaging": false
 				},
 				"inputs": [
@@ -87,7 +76,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer002",
+						"referenceName": "CosmosDbContainer001",
 						"type": "DatasetReference"
 					}
 				]
