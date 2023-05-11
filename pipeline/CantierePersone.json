@@ -3,11 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "SqlJsonToBlobText",
-				"type": "Copy",
+				"name": "CantierePersone_Flow",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.12:00:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -15,86 +15,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\n  (SELECT\n\tmodelname='staff',\n\t[name]=o.Persona,\n\tisactive = o.Operativo,\n\tisinternal = o.Interno,\n\tcf=o.CF,\n\tbirthdate=o.DataNascita,\n\tbirthplace=o.LuogoNascita,\n\ttel=o.Telefono,\n\tmobile=o.Cellulare,\n\t[address]=o.Indirizzo,\n\tcity=o.Comune,\n\tregion=o.Provincia,\n\tzip=o.CAP\n   FROM CantierePersone o FOR JSON PATH)\n)",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+					"dataflow": {
+						"referenceName": "CantierePersone_Flow",
+						"type": "DataFlowReference"
 					},
-					"sink": {
-						"type": "JsonSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "JsonWriteSettings"
-						}
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "AzureSql",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "BlobJsonFile",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "BlobJsonToCosmos",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "SqlJsonToBlobText",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
-						}
-					},
-					"sink": {
-						"type": "CosmosDbSqlApiSink",
-						"writeBehavior": "insert",
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "BlobJsonFile",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CosmosDbContainer001",
-						"type": "DatasetReference"
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
