@@ -1,9 +1,9 @@
 {
-	"name": "pipeline3",
+	"name": "T_Anagrafica",
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "T_Anagrafica_Flow",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "T_Anagrafica_Flow",
 						"type": "DataFlowReference"
 					},
 					"compute": {

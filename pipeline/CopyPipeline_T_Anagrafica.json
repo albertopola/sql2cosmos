@@ -34,15 +34,8 @@
 						"writeBehavior": "upsert",
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false,
-					"validateDataConsistency": false
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "SourceDataset_qgm",
-						"type": "DatasetReference"
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "DestinationDataset_qgm",
