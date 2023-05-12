@@ -9,34 +9,17 @@
 						"referenceName": "AzureSql",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "CantierePersone"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "CosmosDbContainer001",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				}
-			],
+			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'SELECT\\r\\n     modelname=\\'staff\\',\\r\\n     [name]=o.Persona,\\r\\n     isactive = o.Operativo,\\r\\n     isinternal = o.Interno,\\r\\n     cf=o.CF,\\r\\n     birthdate=o.DataNascita,\\r\\n     birthplace=o.LuogoNascita,\\r\\n     tel=o.Telefono,\\r\\n     mobile=o.Cellulare,\\r\\n     [address]=o.Indirizzo,\\r\\n     city=o.Comune,\\r\\n     region=o.Provincia,\\r\\n     zip=o.CAP\\r\\n   FROM CantierePersone',",
-				"     format: 'query') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'document',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     query: 'SELECT\\n     modelname=\\'staff\\',\\n     idpersona=o.IdPersona,\\n     [name]=o.Persona,\\n     isactive = o.Operativo,\\n     isinternal = o.Interno,\\n     cf=o.CF,\\n     birthdate=o.DataNascita,\\n     birthplace=o.LuogoNascita,\\n     tel=o.Telefono,\\n     mobile=o.Cellulare,\\n     [address]=o.Indirizzo,\\n     city=o.Comune,\\n     region=o.Provincia,\\n     zip=o.CAP\\n   FROM CantierePersone as o',",
+				"     format: 'query') ~> CantierePersone"
 			]
 		}
 	}
