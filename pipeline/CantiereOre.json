@@ -24,7 +24,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n  (SELECT\r\n    modelname='giornaliera',\r\n    o.IdAppalto as commessa,\r\n    o.[Data] as datacantiere,\r\n    o.Descrizione as descrizioncommessa,\r\n    o.OreAutocarro as oreautocarro,\r\n    o.Pioggia as pioggia,\r\n    o.userid as userid,\r\n    (select IdPersona as idstaff, Ore as staffeffort from CantiereOre od where od.IdCantiere = o.IdCantiere for json auto) as staffworks\r\n   FROM Cantiere o FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n  (SELECT\r\n    modelname='giornaliera',\r\n    o.IdAppalto as commessa,\r\n    o.[Data] as datacantiere,\r\n    o.Descrizione as descrizionecommessa,\r\n    o.OreAutocarro as oreautocarro,\r\n    o.Pioggia as pioggia,\r\n    o.userid as userid,\r\n    (select IdPersona as idstaff, Ore as staffeffort from CantiereOre od where od.IdCantiere = o.IdCantiere for json auto) as staffworks\r\n   FROM Cantiere o FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
