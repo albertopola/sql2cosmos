@@ -44,19 +44,7 @@
 					"description": "Creates an explicit mapping for each drifted column"
 				},
 				{
-					"name": "join3"
-				},
-				{
-					"name": "join4"
-				},
-				{
-					"name": "select1"
-				},
-				{
-					"name": "select2"
-				},
-				{
-					"name": "unpivot1"
+					"name": "join2"
 				}
 			],
 			"scriptLines": [
@@ -93,24 +81,11 @@
 				"          OreAutocarro = toDecimal(byName('OreAutocarro')),",
 				"          UserId = toString(byName('UserId')),",
 				"          datetime = toBinary(byName('datetime'))) ~> MapDrifted5",
-				"select1, join1 join(select1@IdCantiere == MapDrifted3@IdCantiere,",
+				"MapDrifted5, join1 join(MapDrifted5@IdCantiere == MapDrifted3@IdCantiere,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join3",
-				"unpivot1 join(joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join4",
-				"select2 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"MapDrifted5 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"join3 unpivot(output(",
-				"          ",
-				"     ),",
-				"     lateral: true,",
-				"     ignoreNullPivots: false) ~> unpivot1"
+				"     broadcast: 'auto')~> join2"
 			]
 		}
 	}
