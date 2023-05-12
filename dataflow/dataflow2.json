@@ -1,0 +1,84 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "SQLCantiere"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "SQLCantiereOre"
+				},
+				{
+					"dataset": {
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					},
+					"name": "CosmosDBStaff1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "MapDrifted3",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "MapDrifted4",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.Cantiere',",
+				"     format: 'query') ~> SQLCantiere",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select IdCantiere, IdPersona, Ore from dbo.CantiereOre\\n',",
+				"     format: 'query') ~> SQLCantiereOre",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: 'SELECT c.id, c.idpersona FROM c WHERE c.modelname = \\'staff\\'',",
+				"     format: 'documentQuery',",
+				"     systemColumns: false) ~> CosmosDBStaff1",
+				"SQLCantiere derive(IdCantiere = toInteger(byName('IdCantiere')),",
+				"          IdAppalto = toInteger(byName('IdAppalto')),",
+				"          Data = toTimestamp(byName('Data')),",
+				"          Descrizione = toString(byName('Descrizione')),",
+				"          Pioggia = toBoolean(byName('Pioggia')),",
+				"          OreAutocarro = toDecimal(byName('OreAutocarro')),",
+				"          UserId = toString(byName('UserId')),",
+				"          datetime = toBinary(byName('datetime'))) ~> MapDrifted1",
+				"SQLCantiereOre derive(IdCantiere = toInteger(byName('IdCantiere')),",
+				"          IdPersona = toInteger(byName('IdPersona')),",
+				"          Ore = toDecimal(byName('Ore'))) ~> MapDrifted3",
+				"CosmosDBStaff1 derive(id = toString(byName('id')),",
+				"          idpersona = toString(byName('idpersona'))) ~> MapDrifted4",
+				"MapDrifted3, MapDrifted4 join(toString(MapDrifted3@IdPersona) == MapDrifted4@idpersona,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
+			]
+		}
+	}
+}
