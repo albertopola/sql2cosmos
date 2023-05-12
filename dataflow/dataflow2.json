@@ -9,13 +9,6 @@
 						"referenceName": "AzureSql",
 						"type": "DatasetReference"
 					},
-					"name": "SQLCantiere"
-				},
-				{
-					"dataset": {
-						"referenceName": "AzureSql",
-						"type": "DatasetReference"
-					},
 					"name": "SQLCantiereOre"
 				},
 				{
@@ -24,14 +17,17 @@
 						"type": "DatasetReference"
 					},
 					"name": "CosmosDBStaff1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
 				}
 			],
 			"sinks": [],
 			"transformations": [
-				{
-					"name": "MapDrifted1",
-					"description": "Creates an explicit mapping for each drifted column"
-				},
 				{
 					"name": "MapDrifted3",
 					"description": "Creates an explicit mapping for each drifted column"
@@ -42,14 +38,28 @@
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "MapDrifted5",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "join4"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "unpivot1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'Select * from dbo.Cantiere',",
-				"     format: 'query') ~> SQLCantiere",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
@@ -60,14 +70,11 @@
 				"     query: 'SELECT c.id, c.idpersona FROM c WHERE c.modelname = \\'staff\\'',",
 				"     format: 'documentQuery',",
 				"     systemColumns: false) ~> CosmosDBStaff1",
-				"SQLCantiere derive(IdCantiere = toInteger(byName('IdCantiere')),",
-				"          IdAppalto = toInteger(byName('IdAppalto')),",
-				"          Data = toTimestamp(byName('Data')),",
-				"          Descrizione = toString(byName('Descrizione')),",
-				"          Pioggia = toBoolean(byName('Pioggia')),",
-				"          OreAutocarro = toDecimal(byName('OreAutocarro')),",
-				"          UserId = toString(byName('UserId')),",
-				"          datetime = toBinary(byName('datetime'))) ~> MapDrifted1",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'Select * from dbo.Cantiere',",
+				"     format: 'query') ~> source1",
 				"SQLCantiereOre derive(IdCantiere = toInteger(byName('IdCantiere')),",
 				"          IdPersona = toInteger(byName('IdPersona')),",
 				"          Ore = toDecimal(byName('Ore'))) ~> MapDrifted3",
@@ -77,7 +84,33 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"source1 derive(IdCantiere = toInteger(byName('IdCantiere')),",
+				"          IdAppalto = toInteger(byName('IdAppalto')),",
+				"          Data = toTimestamp(byName('Data')),",
+				"          Descrizione = toString(byName('Descrizione')),",
+				"          Pioggia = toBoolean(byName('Pioggia')),",
+				"          OreAutocarro = toDecimal(byName('OreAutocarro')),",
+				"          UserId = toString(byName('UserId')),",
+				"          datetime = toBinary(byName('datetime'))) ~> MapDrifted5",
+				"select1, join1 join(select1@IdCantiere == MapDrifted3@IdCantiere,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"unpivot1 join(joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"select2 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"MapDrifted5 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"join3 unpivot(output(",
+				"          ",
+				"     ),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivot1"
 			]
 		}
 	}
