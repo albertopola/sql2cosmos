@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "CosmosDbContainer002",
+						"referenceName": "CosmosDbContainer001",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
