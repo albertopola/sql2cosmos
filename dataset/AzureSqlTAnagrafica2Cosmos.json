@@ -1,0 +1,30 @@
+{
+	"name": "AzureSqlTAnagrafica2Cosmos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "idtocosmos",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IdAnagrafica",
+				"type": "nvarchar"
+			},
+			{
+				"name": "id",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TAnagrafica2Cosmos"
+		}
+	}
+}
