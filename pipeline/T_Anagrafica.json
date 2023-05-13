@@ -36,7 +36,14 @@
 			{
 				"name": "Aggiorna TAnagrafica2Cosmos",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "T_Anagrafica_Flow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -64,28 +71,7 @@
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['Column_1']"
-								},
-								"sink": {
-									"name": "id"
-								}
-							},
-							{
-								"source": {
-									"path": "$['Column_2']"
-								},
-								"sink": {
-									"name": "IdAnagrafica"
-								}
-							}
-						]
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
@@ -103,14 +89,7 @@
 			{
 				"name": "Script1",
 				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "Aggiorna TAnagrafica2Cosmos",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
