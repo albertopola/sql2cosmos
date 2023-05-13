@@ -1,5 +1,5 @@
 {
-	"name": "T_Anagrafica",
+	"name": "SQL2Cosmos",
 	"properties": {
 		"activities": [
 			{
@@ -34,7 +34,7 @@
 				}
 			},
 			{
-				"name": "Aggiorna TAnagrafica2Cosmos",
+				"name": "Aggiorna SQL2Cosmos",
 				"type": "Copy",
 				"dependsOn": [
 					{
