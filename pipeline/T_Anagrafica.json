@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "RiCrea Tabella TAnagrafica2Cosmos",
+						"activity": "Aggiorna TAnagrafica2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -38,7 +38,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_Anagrafica_Flow",
+						"activity": "RiCrea Tabella TAnagrafica2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -55,7 +55,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
-						"query": "SELECT c.id, c.anagraficaid from c Where c.modelname='t_anagrafica'",
+						"query": "SELECT c.id, c.anagraficaid, c.modelname from c Where c.modelname='t_anagrafica'",
 						"preferredRegions": []
 					},
 					"sink": {
@@ -82,8 +82,15 @@
 									"path": "$['anagraficaid']"
 								},
 								"sink": {
-									"name": "IdAnagrafica",
-									"type": "String"
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
 								}
 							}
 						],
@@ -123,7 +130,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "USE ARCHEA_AZURE\r\n\r\nIF OBJECT_ID('dbo.TAnagrafica2Cosmos', 'U') is not null\r\ndrop table dbo.TAnagrafica2Cosmos;\r\n\r\n\r\n--CREATE TABLE [dbo].[TAnagrafica2Cosmos] (\r\n  --  [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\r\n    --[modelname]          NVARCHAR (MAX)            NOT NULL,\r\n    --[IdSQL]          NVARCHAR (MAX) NOT NULL,\r\n    --[id]                    NVARCHAR (MAX)            NOT NULL,\r\n    --PRIMARY KEY CLUSTERED ([idtocosmos] ASC)\r\n--);\r\n\r\n"
+							"text": "USE ARCHEA_AZURE\r\nIF OBJECT_ID('dbo.SQL2Cosmos', 'U') is not null\r\ndrop table dbo.SQL2Cosmos;\r\nCREATE TABLE [dbo].[SQL2Cosmos] (\r\n    [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\r\n    [modelname]          NVARCHAR (MAX)            NOT NULL,\r\n    [IdSQL]          NVARCHAR (MAX) NOT NULL,\r\n    [id]                    NVARCHAR (MAX)            NOT NULL,\r\n    PRIMARY KEY CLUSTERED ([idtocosmos] ASC)\r\n);\r\n\r\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
