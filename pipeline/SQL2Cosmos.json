@@ -34,7 +34,7 @@
 				}
 			},
 			{
-				"name": "Aggiorna SQL2Cosmos",
+				"name": "Aggiorna SQL2Cosmos_01",
 				"type": "Copy",
 				"dependsOn": [
 					{
