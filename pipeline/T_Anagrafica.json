@@ -38,7 +38,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "RiCrea Tabella TAnagrafica2Cosmos",
+						"activity": "Crea Tabella SQL2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -105,13 +105,13 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "AzureSqlTAnagrafica2Cosmos",
+						"referenceName": "AzureSql_SQL2Cosmos",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "RiCrea Tabella TAnagrafica2Cosmos",
+				"name": "Crea Tabella SQL2Cosmos",
 				"type": "Script",
 				"dependsOn": [],
 				"policy": {
@@ -130,7 +130,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "USE ARCHEA_AZURE\r\nIF OBJECT_ID('dbo.SQL2Cosmos', 'U') is not null\r\ndrop table dbo.SQL2Cosmos;\r\nCREATE TABLE [dbo].[SQL2Cosmos] (\r\n    [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\r\n    [modelname]          NVARCHAR (MAX)            NOT NULL,\r\n    [IdSQL]          NVARCHAR (MAX) NOT NULL,\r\n    [id]                    NVARCHAR (MAX)            NOT NULL,\r\n    PRIMARY KEY CLUSTERED ([idtocosmos] ASC)\r\n);\r\n\r\n"
+							"text": "USE ARCHEA_AZURE\nIF OBJECT_ID('dbo.SQL2Cosmos', 'U') is not null\ndrop table dbo.SQL2Cosmos;\nCREATE TABLE [dbo].[SQL2Cosmos] (\n    [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\n    [modelname]          NVARCHAR (MAX)            NOT NULL,\n    [IdSQL]          NVARCHAR (MAX) NOT NULL,\n    [id]                    NVARCHAR (MAX)            NOT NULL,\n    PRIMARY KEY CLUSTERED ([idsqltocosmos] ASC)\n);\n\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
