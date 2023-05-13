@@ -38,7 +38,13 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Until1",
+						"activity": "T_Anagrafica_Flow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "CantierePersone_Flow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -156,37 +162,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "CantierePersone_Flow",
-						"type": "DataFlowReference"
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "Until1",
-				"type": "Until",
-				"dependsOn": [
-					{
-						"activity": "CantierePersone_Flow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "T_Anagrafica_Flow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"timeout": "0.12:00:00"
 				}
 			}
 		],
