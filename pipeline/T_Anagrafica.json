@@ -7,7 +7,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Script1",
+						"activity": "RiCrea Tabella TAnagrafica2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -60,18 +60,35 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": false,
-							"keys": [
-								"idtocosmos"
-							],
-							"interimSchemaName": "dbo"
-						},
+						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['anagraficaid']"
+								},
+								"sink": {
+									"name": "IdAnagrafica",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": ""
+					}
 				},
 				"inputs": [
 					{
@@ -87,7 +104,7 @@
 				]
 			},
 			{
-				"name": "Script1",
+				"name": "RiCrea Tabella TAnagrafica2Cosmos",
 				"type": "Script",
 				"dependsOn": [],
 				"policy": {
@@ -106,7 +123,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "USE ARCHEA_AZURE\r\n\r\nIF OBJECT_ID('dbo.TAnagrafica2Cosmos', 'U') is not null\r\ndrop table dbo.TAnagrafica2Cosmos;\r\n\r\n\r\nCREATE TABLE [dbo].[TAnagrafica2Cosmos] (\r\n    [idtocosmos]    INT     IDENTITY (1, 1) NOT NULL,\r\n    [IdAnagrafica]          NVARCHAR (MAX)            NOT NULL,\r\n    [id]                    NVARCHAR (MAX)            NOT NULL,\r\n    PRIMARY KEY CLUSTERED ([idtocosmos] ASC)\r\n);\r\n\r\n"
+							"text": "USE ARCHEA_AZURE\r\n\r\nIF OBJECT_ID('dbo.TAnagrafica2Cosmos', 'U') is not null\r\ndrop table dbo.TAnagrafica2Cosmos;\r\n\r\n\r\n--CREATE TABLE [dbo].[TAnagrafica2Cosmos] (\r\n  --  [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\r\n    --[modelname]          NVARCHAR (MAX)            NOT NULL,\r\n    --[IdSQL]          NVARCHAR (MAX) NOT NULL,\r\n    --[id]                    NVARCHAR (MAX)            NOT NULL,\r\n    --PRIMARY KEY CLUSTERED ([idtocosmos] ASC)\r\n--);\r\n\r\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
