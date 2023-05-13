@@ -85,7 +85,7 @@
 							},
 							{
 								"source": {
-									"path": "$['anagraficaid']"
+									"path": "$['sqlid']"
 								},
 								"sink": {
 									"name": "IdSQL"
