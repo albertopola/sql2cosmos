@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy_JSON2Cosmos",
+						"activity": "CantierePersone_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -149,7 +149,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "CantierePersone_SQL2JSON",
+						"activity": "T_Anagrafica_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -259,7 +259,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_Anagrafica_SQL2JSON",
+						"activity": "Delete_JSON_2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -319,7 +319,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Aggiorna SQL2Cosmos_01",
+						"activity": "Copy_JSON2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
