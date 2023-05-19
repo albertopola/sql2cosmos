@@ -26,7 +26,7 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'SELECT modelname=\\'t_anagrafica\\' \\n      ,[IdAnagrafica] as sqlid\\n      ,[Denominazione] as name\\n      ,[Indirizzo] as address\\n      ,[CAP] as zip\\n      ,[Citta] as city\\n      ,[Provincia] as region\\n      ,[CF] as cf\\n      ,[PIVA] as piva\\n      ,[Tel] as tel\\n      ,[FAX] as fax\\n      ,[email] as email\\n      ,[CodAnacf] as codanacf\\n      ,[Fornitore] as fornitore\\n      ,[Cliente] as cliente\\n      ,[Ente] as ente\\n  FROM [arc].[T_Anagrafica]',",
+				"     query: 'SELECT [value] FROM OPENJSON(\\n(SELECT modelname=\\'t_anagrafica\\',\\no.IdAnagrafica as sqlid,\\no.Denominazione as [name],\\no.CF as cf,\\no.PIVA as piva,\\no.Fornitore as fornitore,\\no.Cliente as cliente,\\no.Ente as ente,\\n\\n(select addressType=\\'Sede Legale\\', od.CAP as zip, od.Indirizzo as [address], od.Provincia as region, od.Citta as city from arc.T_Anagrafica  as od where od.IdAnagrafica=o.IdAnagrafica for json auto) as addressgroup,\\n(select contactType=\\'Ufficio\\', odd.TEL as phone, odd.FAX as fax, odd.email as email from arc.T_Anagrafica  as odd where odd.IdAnagrafica=o.IdAnagrafica for json auto) as contactgroup\\nFROM arc.T_AnagraFica as o FOR JSON PATH)\\n)',",
 				"     format: 'query') ~> source1",
 				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
