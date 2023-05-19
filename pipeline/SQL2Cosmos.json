@@ -3,37 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "T_Anagrafica_Flow",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "Crea Tabella SQL2Cosmos",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "T_Anagrafica_Flow",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
 				"name": "Aggiorna SQL2Cosmos_01",
 				"type": "Copy",
 				"dependsOn": [
@@ -180,7 +149,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_Anagrafica_Flow",
+						"activity": "Copy data3",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -221,6 +190,66 @@
 				"outputs": [
 					{
 						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy data3",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Crea Tabella SQL2Cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(SELECT modelname='t_anagrafica',\r\no.IdAnagrafica as sqlid,\r\no.Denominazione as [name],\r\no.CF as cf,\r\no.PIVA as piva,\r\no.Fornitore as fornitore,\r\no.Cliente as cliente,\r\no.Ente as ente,\r\n\r\n(select addressType='Sede Legale', od.CAP as zip, od.Indirizzo as [address], od.Provincia as region, od.Citta as city from arc.T_Anagrafica  as od where od.IdAnagrafica=o.IdAnagrafica for json auto) as addressgroup,\r\n(select contactType='Ufficio', odd.TEL as phone, odd.FAX as fax, odd.email as email from arc.T_Anagrafica  as odd where odd.IdAnagrafica=o.IdAnagrafica for json auto) as contactgroup\r\nFROM arc.T_AnagraFica as o FOR JSON PATH)\r\n)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlJsonToBlobText",
 						"type": "DatasetReference"
 					}
 				]
