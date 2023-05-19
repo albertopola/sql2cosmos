@@ -149,12 +149,6 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_Anagrafica_SQL2JSON",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "CantierePersone_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
@@ -265,7 +259,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Delete_JSON_1",
+						"activity": "T_Anagrafica_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
