@@ -3,93 +3,9 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Aggiorna SQL2Cosmos_01",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_JSON2Cosmos_copy1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "CosmosDbSqlApiSource",
-						"query": "SELECT c.id, c.sqlid, c.modelname from c \nWhere c.modelname='staff' or c.modelname='t_anagrafica' ",
-						"preferredRegions": []
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['id']"
-								},
-								"sink": {
-									"name": "id",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['sqlid']"
-								},
-								"sink": {
-									"name": "IdSQL"
-								}
-							},
-							{
-								"source": {
-									"path": "$['modelname']"
-								},
-								"sink": {
-									"name": "modelname"
-								}
-							}
-						],
-						"collectionReference": ""
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "CosmosDbContainer001",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "AzureSql_SQL2Cosmos",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
 				"name": "Crea Tabella SQL2Cosmos",
 				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "Delete_JSON_1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -145,11 +61,11 @@
 				}
 			},
 			{
-				"name": "Copy_JSON2Cosmos",
+				"name": "Update_JSON2Cosmos",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_Anagrafica_SQL2JSON",
+						"activity": "Update_T_Anagrafica_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -196,11 +112,17 @@
 				]
 			},
 			{
-				"name": "T_Anagrafica_SQL2JSON",
+				"name": "Update_T_Anagrafica_SQL2JSON",
 				"type": "Copy",
 				"dependsOn": [
 					{
 						"activity": "Crea Tabella SQL2Cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Delete_JSON_1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -217,7 +139,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(SELECT modelname='t_anagrafica',\r\no.IdAnagrafica as sqlid,\r\no.Denominazione as [name],\r\no.CodAnacf as codanacf, \r\no.CF as cf,\r\no.PIVA as piva,\r\no.Fornitore as fornitore,\r\no.Cliente as cliente,\r\no.Ente as ente,\r\n\r\n(select addressType='Sede Legale', od.CAP as zip, od.Indirizzo as [address], od.Provincia as region, od.Citta as city from arc.T_Anagrafica  as od where od.IdAnagrafica=o.IdAnagrafica for json auto) as addressgroup,\r\n(select contactType='Ufficio', odd.TEL as phone, odd.FAX as fax, odd.email as email from arc.T_Anagrafica  as odd where odd.IdAnagrafica=o.IdAnagrafica for json auto) as contactgroup\r\nFROM arc.T_AnagraFica as o FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_anagrafica',\r\no.IdAnagrafica as sqlid,\r\no.Denominazione as [name],\r\no.CodAnacf as codanacf, \r\no.CF as cf,\r\no.PIVA as piva,\r\no.Fornitore as fornitore,\r\no.Cliente as cliente,\r\no.Ente as ente,\r\n(select addressType='Sede Legale', od.CAP as zip, od.Indirizzo as [address], od.Provincia as region, od.Citta as city from arc.T_Anagrafica  as od where od.IdAnagrafica=o.IdAnagrafica for json auto) as addressgroup,\r\n(select contactType='Ufficio', odd.TEL as phone, odd.FAX as fax, odd.email as email from arc.T_Anagrafica  as odd where odd.IdAnagrafica=o.IdAnagrafica for json auto) as contactgroup\r\nFROM arc.T_AnagraFica as o left join dbo.SQL2Cosmos as oo on o.IdAnagrafica=oo.IdSQL where oo.IdSQL is null FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -277,7 +199,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='staff', \r\n     [IdPersona] as sqlid,\r\n     [Persona] as name,\r\n     [Operativo]  as isactive ,\r\n     [Interno]   as isinternal,\r\n     [CF] as cf ,\r\n     [DataNascita] as birthdate,\r\n     [LuogoNascita]  as birthplace,\r\n     [Telefono]  as tel,\r\n     [Cellulare]  as mobile,\r\n     [Indirizzo]  as address,\r\n     [Comune] AS city,\r\n     [Provincia] as region,\r\n     [CAP] as zip\r\n\r\n  FROM [dbo].[CantierePersone]\r\n FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='staff', \r\n     o.[IdPersona] as sqlid,\r\n     o.[Persona] as name,\r\n     o.[Operativo]  as isactive ,\r\n     o.[Interno]   as isinternal,\r\n     o.[CF] as cf ,\r\n     o.[DataNascita] as birthdate,\r\n     o.[LuogoNascita]  as birthplace,\r\n     o.[Telefono]  as tel,\r\n     o.[Cellulare]  as mobile,\r\n     o.[Indirizzo]  as address,\r\n     o.[Comune] AS city,\r\n     o.[Provincia] as region,\r\n     o.[CAP] as zip\r\n\r\n  FROM [dbo].[CantierePersone] as o left join dbo.SQL2Cosmos as oo on o.IdPersona=oo.IdSQL where oo.IdSQL is null\r\n FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -320,7 +242,13 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Copy_JSON2Cosmos",
+						"activity": "Update_JSON2Cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Anagrafica",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -404,6 +332,153 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Anagrafica",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Update_T_Anagrafica_SQL2JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Staff",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CantierePersone_SQL2JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_2_copy1",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Staff",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
 			}
 		],
 		"annotations": []
