@@ -35,6 +35,7 @@
 				"     updateable:false,",
 				"     upsertable:false,",
 				"     format: 'document',",
+				"     partitionKey: ['/id'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
