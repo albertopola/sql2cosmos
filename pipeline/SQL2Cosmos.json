@@ -5,8 +5,6 @@
 			{
 				"name": "Crea Tabella SQL2Cosmos",
 				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -334,7 +332,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Filter1",
+						"activity": "Update_JSON2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -351,6 +349,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='t_anagrafica'",
 						"preferredRegions": []
 					},
 					"sink": {
@@ -408,13 +407,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Copy_JSON2Cosmos_copy1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Update_JSON_SQL2Cosmos-Anagrafica_copy1",
+						"activity": "Update_JSON_SQL2Cosmos-Anagrafica_copy2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -449,11 +442,11 @@
 				}
 			},
 			{
-				"name": "Update_JSON_SQL2Cosmos-Anagrafica_copy1",
+				"name": "Update_JSON_SQL2Cosmos-Anagrafica_copy2",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "CantierePersone_SQL2JSON",
+						"activity": "Copy_JSON2Cosmos_copy1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -469,15 +462,9 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
-						}
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='staff'",
+						"preferredRegions": []
 					},
 					"sink": {
 						"type": "AzureSqlSink",
@@ -518,7 +505,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "BlobJsonFile",
+						"referenceName": "CosmosDbContainer001",
 						"type": "DatasetReference"
 					}
 				],
@@ -530,25 +517,34 @@
 				]
 			},
 			{
-				"name": "Filter1",
-				"type": "Filter",
-				"dependsOn": [
-					{
-						"activity": "Update_JSON2Cosmos",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"name": "Delete_JSON_1_copy1",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
-						"value": "@activity('Update_T_Anagrafica_SQL2JSON').output",
-						"type": "Expression"
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
 					},
-					"condition": {
-						"value": "@activity('Update_JSON2Cosmos').output",
-						"type": "Expression"
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
 					}
 				}
 			}

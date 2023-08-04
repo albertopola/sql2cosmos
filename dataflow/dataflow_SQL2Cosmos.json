@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "dataflow_SQL2Cosmos",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -9,11 +9,30 @@
 						"referenceName": "AzureSql_SQL2Cosmos",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "TAnagraficaSQL2Cosmos"
+				},
+				{
+					"dataset": {
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					},
+					"name": "TAnagraficaContainer001"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "MapDrifted2",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "join1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          idtocosmos as integer,",
@@ -23,7 +42,36 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     query: 'select * from SQL2Cosmos where modelname=\\'t_anagrafica\\'',",
+				"     format: 'query') ~> TAnagraficaSQL2Cosmos",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: 'SELECT * FROM c WHERE c.modelname=\\'t_anagrafica\\'',",
+				"     format: 'documentQuery',",
+				"     systemColumns: false) ~> TAnagraficaContainer001",
+				"TAnagraficaSQL2Cosmos derive(idsqltocosmos = toInteger(byName('idsqltocosmos')),",
+				"          modelname = toString(byName('modelname')),",
+				"          IdSQL = toString(byName('IdSQL'))) ~> MapDrifted1",
+				"TAnagraficaContainer001 derive({_attachments} = toString(byName('_attachments')),",
+				"          {_etag} = toString(byName('_etag')),",
+				"          {_rid} = toString(byName('_rid')),",
+				"          {_self} = toString(byName('_self')),",
+				"          {_ts} = toInteger(byName('_ts')),",
+				"          cf = toString(byName('cf')),",
+				"          cliente = toString(byName('cliente')),",
+				"          codanacf = toString(byName('codanacf')),",
+				"          ente = toString(byName('ente')),",
+				"          fornitore = toString(byName('fornitore')),",
+				"          id = toString(byName('id')),",
+				"          modelname = toString(byName('modelname')),",
+				"          name = toString(byName('name')),",
+				"          piva = toString(byName('piva')),",
+				"          sqlid = toString(byName('sqlid'))) ~> MapDrifted2",
+				"MapDrifted1, MapDrifted2 join(toString(byName('IdSQL')) == toString(byName('sqlid')),",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
 			]
 		}
 	}
