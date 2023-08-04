@@ -5,6 +5,8 @@
 			{
 				"name": "Crea Tabella SQL2Cosmos",
 				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -246,12 +248,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "Update_JSON2Cosmos",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"policy": {
@@ -338,7 +334,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Update_T_Anagrafica_SQL2JSON",
+						"activity": "Filter1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -354,15 +350,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
-						}
+						"type": "CosmosDbSqlApiSource",
+						"preferredRegions": []
 					},
 					"sink": {
 						"type": "AzureSqlSink",
@@ -403,7 +392,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "BlobJsonFile",
+						"referenceName": "CosmosDbContainer001",
 						"type": "DatasetReference"
 					}
 				],
@@ -539,6 +528,29 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Filter1",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Update_JSON2Cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Update_T_Anagrafica_SQL2JSON').output",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@activity('Update_JSON2Cosmos').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": []
