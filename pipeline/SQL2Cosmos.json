@@ -5,7 +5,14 @@
 			{
 				"name": "Crea Tabella SQL2Cosmos",
 				"type": "Script",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DeleteContainer001",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -31,7 +38,14 @@
 			{
 				"name": "Delete_JSON_1",
 				"type": "Delete",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DeleteContainer001",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -517,8 +531,8 @@
 				]
 			},
 			{
-				"name": "Delete_JSON_1_copy1",
-				"type": "Delete",
+				"name": "DeleteContainer001",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -529,23 +543,15 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "OrdersBlobsToDelete",
-						"type": "DatasetReference"
+					"dataflow": {
+						"referenceName": "DeleteContainer001",
+						"type": "DataFlowReference"
 					},
-					"logStorageSettings": {
-						"linkedServiceName": {
-							"referenceName": "AzureBlobStorage1",
-							"type": "LinkedServiceReference"
-						},
-						"path": "containertest/test"
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableLogging": true,
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"recursive": true,
-						"enablePartitionDiscovery": false
-					}
+					"traceLevel": "Fine"
 				}
 			}
 		],
