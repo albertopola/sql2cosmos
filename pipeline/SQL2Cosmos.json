@@ -139,7 +139,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_anagrafica',\r\no.IdAnagrafica as sqlid,\r\no.Denominazione as [name],\r\no.CodAnacf as codanacf, \r\no.CF as cf,\r\no.PIVA as piva,\r\no.Fornitore as fornitore,\r\no.Cliente as cliente,\r\no.Ente as ente,\r\n(select addressType='Sede Legale', od.CAP as zip, od.Indirizzo as [address], od.Provincia as region, od.Citta as city from arc.T_Anagrafica  as od where od.IdAnagrafica=o.IdAnagrafica for json auto) as addressgroup,\r\n(select contactType='Ufficio', odd.TEL as phone, odd.FAX as fax, odd.email as email from arc.T_Anagrafica  as odd where odd.IdAnagrafica=o.IdAnagrafica for json auto) as contactgroup\r\nFROM arc.T_AnagraFica as o \r\nFOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     o.[IdAnagrafica] as anagraficaid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n     o.[Den_appalto]  as denappalto,\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia,\r\n    CONVERT(datetime,\r\n        COALESCE(CONVERT(varchar, o.Data_gara, 101), '') \r\n        + ' ' + \r\n        COALESCE(CONVERT(varchar, o.Ora_gara, 108), '')\r\n    , 120) AS datagara,\r\n\r\n        CONVERT(datetime,\r\n        COALESCE(CONVERT(varchar, o.Data_offerta, 101), '') \r\n        + ' ' + \r\n        COALESCE(CONVERT(varchar, o.Ora_offerta, 108), '')\r\n    , 120) AS dataofferta\r\n\r\n  FROM [arc].[T_Appalti] as o\r\n FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -403,7 +403,7 @@
 				]
 			},
 			{
-				"name": "Delete_JSON_2_copy1",
+				"name": "Delete_JSON_3",
 				"type": "Delete",
 				"dependsOn": [
 					{
@@ -447,6 +447,231 @@
 				"dependsOn": [
 					{
 						"activity": "Copy_JSON2Cosmos_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='staff'",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['sqlid']"
+								},
+								"sink": {
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "T_Appalti_SQL2JSON",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Delete_JSON_3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     o.[IdAnagrafica] as anagraficaid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n     o.[Den_appalto]  as denappalto,\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia,\r\n     o.[Data_gara] as datagara,\r\n     o.[Data_offerta] as dataofferta\r\n\r\n  FROM [arc].[T_Appalti] as o\r\n FOR JSON PATH)\r\n)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlJsonToBlobText",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_JSON2Cosmos",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "T_Appalti_SQL2JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_4",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Appalti",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Appalti",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
