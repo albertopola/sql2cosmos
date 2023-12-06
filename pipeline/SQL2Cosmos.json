@@ -139,7 +139,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     o.[IdAnagrafica] as anagraficaid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n     o.[Den_appalto]  as denappalto,\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia,\r\n    CONVERT(datetime,\r\n        COALESCE(CONVERT(varchar, o.Data_gara, 101), '') \r\n        + ' ' + \r\n        COALESCE(CONVERT(varchar, o.Ora_gara, 108), '')\r\n    , 120) AS datagara,\r\n\r\n        CONVERT(datetime,\r\n        COALESCE(CONVERT(varchar, o.Data_offerta, 101), '') \r\n        + ' ' + \r\n        COALESCE(CONVERT(varchar, o.Ora_offerta, 108), '')\r\n    , 120) AS dataofferta\r\n\r\n  FROM [arc].[T_Appalti] as o\r\n FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "\t  SELECT [value]\r\nFROM OPENJSON(\r\n    (SELECT \r\n        sqlid=o.[IdAnagrafica]\r\n        ,modelname='t_anagrafica'\r\n        ,name=o.[Denominazione]\r\n        ,cf=o.[CF]\r\n        ,piva=o.[PIVA]\r\n        ,codanacf=o.[CodAnacf]\r\n        ,fornitore=o.[Fornitore]\r\n        ,cliente=o.[Cliente]\r\n        ,ente=o.[Ente],\r\n        (SELECT addressType='ufficio', indirizzo=od.Indirizzo, city=od.Citta, zip=od.CAP, region=od.Provincia, tel=od.Tel,email=od.email, fax=od.FAX  FROM arc.T_Anagrafica od WHERE od.IdAnagrafica=o.IdAnagrafica FOR JSON AUTO) AS addresgroup\r\n    FROM arc.T_Anagrafica o \r\n    FOR JSON PATH)\r\n)\r\nWHERE [value] IS NOT NULL;\r\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -538,7 +538,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     o.[IdAnagrafica] as anagraficaid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n     o.[Den_appalto]  as denappalto,\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia,\r\n     o.[Data_gara] as datagara,\r\n     o.[Data_offerta] as dataofferta\r\n\r\n  FROM [arc].[T_Appalti] as o\r\n FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     o.[IdAnagrafica] as anagraficaid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n\r\n\r\n    REPLACE(\r\n        REPLACE(\r\n            REPLACE(\r\n                REPLACE(\r\n                    REPLACE(\r\n                        REPLACE(o.den_appalto, ' ', ' '), -- Sostituisci spazi con spazi\r\n                    CHAR(9), ''), -- Rimuovi tabulazioni\r\n                CHAR(10), ''), -- Rimuovi ritorni a capo\r\n            CHAR(13), ''), -- Rimuovi a capo\r\n        '\"', ''), -- Rimuovi doppi apici\r\n    PATINDEX('%[^a-zA-Z0-9_]%', den_appalto), '') AS den_appalto,\r\n\r\n\r\n\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia\r\n      ,CAST(CONCAT(CONVERT(VARCHAR(10), o.Data_gara, 120), ' ', CONVERT(VARCHAR(8), o.Ora_gara, 108)) AS DATETIME) AS Data_gara\r\n      ,CAST(CONCAT(CONVERT(VARCHAR(10), o.Data_offerta, 120), ' ', CONVERT(VARCHAR(8), o.Ora_offerta, 108)) AS DATETIME) AS Data_offerta\r\n  FROM [arc].[T_Appalti] as o\r\n FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -688,7 +688,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
-						"query": "SELECT * FROM c WHERE c.modelname='staff'",
+						"query": "SELECT * FROM c WHERE c.modelname='t_appalti'",
 						"preferredRegions": []
 					},
 					"sink": {
