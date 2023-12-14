@@ -1,0 +1,674 @@
+{
+	"name": "SQL2Cosmos_CantiereContainer",
+	"properties": {
+		"activities": [
+			{
+				"name": "Crea Tabella SQL2Cosmos",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "USE ARCHEA_AZURE\nIF OBJECT_ID('dbo.SQL2Cosmos', 'U') is not null\ndrop table dbo.SQL2Cosmos;\nCREATE TABLE [dbo].[SQL2Cosmos] (\n    [idsqltocosmos]    INT     IDENTITY (1, 1) NOT NULL,\n    [modelname]          NVARCHAR (MAX)            NOT NULL,\n    [IdSQL]          NVARCHAR (MAX) NOT NULL,\n    [id]                    NVARCHAR (MAX)            NOT NULL,\n    PRIMARY KEY CLUSTERED ([idsqltocosmos] ASC)\n);\n\n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Delete_JSON_1",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Copy_JSON2Cosmos_copy1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_3",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Anagrafica_copy2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Anagrafica_copy2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='staff'",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['sqlid']"
+								},
+								"sink": {
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "T_Appalti_SQL2JSON",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Delete_JSON_3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='t_appalti', \r\n     o.[IdAppalto] as sqlid,\r\n     --o.[IdAnagrafica] as anagraficaid,\r\n\t --oo.IdSQL as verifica,\r\n\t --oo.id as customerid,\r\n     o.[App_data_ins]  as appdatains ,\r\n     o.[App_n_ins]   as appnins,\r\n     o.[App_esito] as appesito ,\r\n     o.[App_note] as appnote,\r\n    REPLACE(\r\n        REPLACE(\r\n            REPLACE(\r\n                REPLACE(\r\n                    REPLACE(\r\n                        REPLACE(o.den_appalto, ' ', ' '), -- Sostituisci spazi con spazi\r\n                    CHAR(9), ''), -- Rimuovi tabulazioni\r\n                CHAR(10), ''), -- Rimuovi ritorni a capo\r\n            CHAR(13), ''), -- Rimuovi a capo\r\n        '\"', ''), -- Rimuovi doppi apici\r\n    PATINDEX('%[^a-zA-Z0-9_]%', den_appalto), '') AS den_appalto,\r\n     o.[CUP]  as cup,\r\n     o.[CIP]  as cig,\r\n     o.[Commessa]  as commessa,\r\n     o.[Categoria] as categoria,\r\n     o.[Importo_lavoro] as importolavoro,\r\n     o.[Importo_sicurezza] as importosicurezza,\r\n     o.[Importo] as importo,\r\n     o.[Importo_lettere] as importolettere,\r\n     o.[Importo_perizia] as importoperizia,\r\n     CASE\r\n\t WHEN o.Data_gara IS NOT NULL THEN\r\n\t\t CAST(CONCAT(CONVERT(VARCHAR(10), o.Data_gara, 120), ' ', CONVERT(VARCHAR(8), o.Ora_gara, 108)) AS DATETIME)\r\n\t\tELSE\r\n\t\t NULL\r\n\t END AS Data_gara,\r\n\t CASE\r\n\t\tWHEN o.Data_offerta IS NOT NULL THEN\r\n\t\t\tCAST(CONCAT(CONVERT(VARCHAR(10), o.Data_offerta, 120), ' ', CONVERT(VARCHAR(8), o.Ora_offerta, 108)) AS DATETIME)\r\n\t \tELSE\r\n\t\t NULL\r\n\t\tEND  AS Data_offerta,\r\n\t o.Aperto as aperto,\r\n\t o.Aperto_ore as aperto_ore,\r\n--POPOLAMENTO ROLES\r\n\t\t (select codiceidentificativo='01', indirizzo=od.Cant_indirizzo, cap=od.Cant_cap, comune=od.Cant_Paese, provincia=od.Cant_provincia, data_inizio_lavori=od.Cant_data_inizio_lavori, data_fine_lavori=od.Cant_data_fine_lavori,\r\n\t\t\t(select\trole_type='RL', role_value=ood.RL, \r\n\t\t\t\t\trole_type='DL', role_value=ood.DL,\r\n\t\t\t\t\trole_type='CSP', role_value=ood.CSP,\r\n\t\t\t\t\trole_type='CSE', role_value=ood.CSE,\r\n\t\t\t\t\trole_type='Capo Cantiere', role_value=ood.Capo_Cantiere,\r\n\t\t\t\t\trole_type='Addetto Antincendio', role_value=ood.Antincendio,\r\n\t\t\t\t\trole_type='Addetto Primo Soccorso', role_value=ood.Pronto_Soccorso,\r\n\t\t\t\t\trole_type='Addetto Evacuazione', role_value=ood.evacuazione\r\n\t\t\tfrom arc.T_Appalti ood where ood.IdAppalto=od.IdAppalto for json auto) as roles\r\n\t  \r\n\t\t\tfrom arc.T_Appalti od where od.IdAppalto=o.Idappalto for json auto\r\n\t\t\t) as worksites,\r\n--POPOLAMENTO CUSTOMERS\r\n\t\t(select  anagraficaid=o.IdAnagrafica, customerid=oo.id, denominazione=aad.Denominazione\r\n\t\tfrom arc.T_Anagrafica aad where aad.IdAnagrafica=o.IdAnagrafica for json auto) as customers,\r\n--POPOLAMENTO FINANCES\r\n\t\t(select\tcosto_ore = eed.C_Prezzo_Ore,\r\n\t\t\t\tore_autocarro=eed.C_Ore_Autocarro,\r\n\t\t\t\tcosto_autocarro=eed.C_Prezzo_Autocarro,\r\n\t\t\t\tricarico_materiali=eed.C_Ricarico,\r\n\t\t\t\tcosto_contratti=eed.C_Contratti,\r\n\t\t\t\tcosto_noleggi=eed.C_Noleggi\t\t\r\n\t\tfrom arc.T_Appalti eed where eed.IdAppalto=o.IdAppalto for json auto) as finances\r\n\r\n  FROM [arc].[T_Appalti] as o left join [dbo].[SQL2Cosmos] as oo on o.IdAnagrafica=oo.IdSQL where oo.modelname='t_anagrafica'\r\n FOR JSON PATH)\r\n)\r\nWHERE [value] IS NOT NULL; --copia solo i valori non null\r\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlJsonToBlobText",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_JSON2Cosmos",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "T_Appalti_SQL2JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_4",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Appalti",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Appalti",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='t_appalti'",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['sqlid']"
+								},
+								"sink": {
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Cantieri_SQL2JSON",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Delete_JSON_4",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n  (SELECT\r\n  modelname = 'giornaliera',\r\n  sqlid = o.idCantiere,\r\n  worksiteid = ood.id,\r\n  appaltoid = o.idAppalto,\r\n  datacantiere = o.[Data],\r\n  commessa = oo.Commessa,\r\n  descrizionecommessa = o.Descrizione,\r\n  pioggia = o.Pioggia,\r\n  oreautocarro = o.OreAutocarro,\r\n  userid = o.UserId,\r\n  (SELECT\r\n    idstaff=id,\r\n    --IdSQL,\r\n\tstaffname=Persona,\r\n    staffeffort=Ore\r\n   FROM CantiereOre od\r\n   LEFT JOIN SQL2Cosmos ON od.IdPersona = SQL2Cosmos.IdSQL AND SQL2Cosmos.modelname = 'staff'\r\n   LEFT JOIN CantierePersone ood ON od.IdPersona=ood.IdPersona \r\n   WHERE od.IdCantiere = o.IdCantiere\r\n   FOR JSON PATH) AS staffworks\r\nFROM Cantiere o\r\nLEFT JOIN arc.T_Appalti oo ON o.IdAppalto = oo.IdAppalto\r\nLEFT JOIN SQL2Cosmos ood ON o.IdAppalto = ood.IdSQL AND ood.modelname = 't_appalti'\r\nFOR JSON PATH\r\n)\r\n)\r\nWHERE [value] IS NOT NULL;\r\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlJsonToBlobText",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_JSON2Cosmos_copy2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Cantieri_SQL2JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_4_copy1",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Update_JSON_SQL2Cosmos-Cantieri",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Cantieri",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos_copy2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='giornaliera'",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['sqlid']"
+								},
+								"sink": {
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbContainer001",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
