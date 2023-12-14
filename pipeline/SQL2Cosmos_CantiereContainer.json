@@ -140,7 +140,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbCantiere",
 						"type": "DatasetReference"
 					}
 				]
