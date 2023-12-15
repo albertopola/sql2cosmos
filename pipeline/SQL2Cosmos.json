@@ -622,7 +622,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbT_Appalti",
 						"type": "DatasetReference"
 					}
 				]
@@ -730,7 +730,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbT_Appalti",
 						"type": "DatasetReference"
 					}
 				],
@@ -847,7 +847,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbGiornaliera",
 						"type": "DatasetReference"
 					}
 				]
