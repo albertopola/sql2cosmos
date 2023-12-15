@@ -106,7 +106,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbT_Anagrafica",
 						"type": "DatasetReference"
 					}
 				]
@@ -322,7 +322,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbStaff",
 						"type": "DatasetReference"
 					}
 				]
@@ -391,7 +391,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbT_Anagrafica",
 						"type": "DatasetReference"
 					}
 				],
@@ -505,7 +505,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "CosmosDbContainer001",
+						"referenceName": "CosmosDbStaff",
 						"type": "DatasetReference"
 					}
 				],
