@@ -890,6 +890,149 @@
 						"enablePartitionDiscovery": false
 					}
 				}
+			},
+			{
+				"name": "Cantieri_SQL2JSON_copy1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n  (SELECT\r\n  modelname = 'giornaliera',\r\n  sqlid = o.idCantiere,\r\n  worksiteid = ood.id,\r\n  appaltoid = o.idAppalto,\r\n  datacantiere = o.[Data],\r\n  commessa = oo.Commessa,\r\n  descrizionecommessa = o.Descrizione,\r\n  pioggia = o.Pioggia,\r\n  oreautocarro = o.OreAutocarro,\r\n  userid = o.UserId,\r\n  (SELECT\r\n    idstaff=id,\r\n    --IdSQL,\r\n\tstaffname=Persona,\r\n    staffeffort=Ore\r\n   FROM CantiereOre od\r\n   LEFT JOIN SQL2Cosmos ON od.IdPersona = SQL2Cosmos.IdSQL AND SQL2Cosmos.modelname = 'staff'\r\n   LEFT JOIN CantierePersone ood ON od.IdPersona=ood.IdPersona \r\n   WHERE od.IdCantiere = o.IdCantiere\r\n   FOR JSON PATH) AS staffworks\r\nFROM Cantiere o\r\nLEFT JOIN arc.T_Appalti oo ON o.IdAppalto = oo.IdAppalto\r\nLEFT JOIN SQL2Cosmos ood ON o.IdAppalto = ood.IdSQL AND ood.modelname = 't_appalti'\r\nFOR JSON PATH\r\n)\r\n)\r\nWHERE [value] IS NOT NULL;\r\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSql",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlJsonToBlobText",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_JSON2Cosmos_copy2_copy1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Cantieri_SQL2JSON_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "BlobJsonFile",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbGiornaliera",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Delete_JSON_4_copy1_copy1",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy_JSON2Cosmos_copy2_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "OrdersBlobsToDelete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "containertest/test"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
 			}
 		],
 		"annotations": []
