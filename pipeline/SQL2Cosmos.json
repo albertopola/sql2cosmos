@@ -892,7 +892,7 @@
 				}
 			},
 			{
-				"name": "Cantieri_SQL2JSON_copy1",
+				"name": "T_AcquistiSQL2JSON",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -945,11 +945,11 @@
 				]
 			},
 			{
-				"name": "Copy_JSON2Cosmos_copy2_copy1",
+				"name": "Copy_JSON2Cosmos_T_Acquisti",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Cantieri_SQL2JSON_copy1",
+						"activity": "T_AcquistiSQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1000,7 +1000,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Copy_JSON2Cosmos_copy2_copy1",
+						"activity": "Copy_JSON2Cosmos_T_Acquisti",
 						"dependencyConditions": [
 							"Succeeded"
 						]
