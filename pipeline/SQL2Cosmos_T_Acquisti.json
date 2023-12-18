@@ -140,7 +140,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbGiornaliera",
+						"referenceName": "CosmosDbT_Appalti",
 						"type": "DatasetReference"
 					}
 				]
