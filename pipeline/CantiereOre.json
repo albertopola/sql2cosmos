@@ -105,12 +105,6 @@
 						"referenceName": "BlobJsonFile",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CosmosDbContainer001",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{

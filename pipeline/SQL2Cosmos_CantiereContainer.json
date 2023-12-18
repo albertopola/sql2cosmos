@@ -137,12 +137,6 @@
 						"referenceName": "BlobJsonFile",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CosmosDbCantiere",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{

@@ -12,10 +12,6 @@
 					"name": "TAnagraficaSQL2Cosmos"
 				},
 				{
-					"dataset": {
-						"referenceName": "CosmosDbContainer001",
-						"type": "DatasetReference"
-					},
 					"name": "TAnagraficaContainer001"
 				}
 			],
@@ -45,10 +41,7 @@
 				"     query: 'select * from SQL2Cosmos where modelname=\\'t_anagrafica\\'',",
 				"     format: 'query') ~> TAnagraficaSQL2Cosmos",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     query: 'SELECT * FROM c WHERE c.modelname=\\'t_anagrafica\\'',",
-				"     format: 'documentQuery',",
-				"     systemColumns: false) ~> TAnagraficaContainer001",
+				"     validateSchema: false) ~> TAnagraficaContainer001",
 				"TAnagraficaSQL2Cosmos derive(idsqltocosmos = toInteger(byName('idsqltocosmos')),",
 				"          modelname = toString(byName('modelname')),",
 				"          IdSQL = toString(byName('IdSQL'))) ~> MapDrifted1",
