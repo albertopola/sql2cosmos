@@ -35,7 +35,7 @@
 				}
 			},
 			{
-				"name": "Cantieri_SQL2JSON",
+				"name": "Giornaliera_SQL2JSON",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -99,7 +99,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Cantieri_SQL2JSON",
+						"activity": "Giornaliera_SQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
