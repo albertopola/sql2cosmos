@@ -35,7 +35,7 @@
 				}
 			},
 			{
-				"name": "T_AcquistiSQL2JSON",
+				"name": "T_VenditeSQL2JSON",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -95,11 +95,11 @@
 				]
 			},
 			{
-				"name": "Copy_JSON2Cosmos_T_Acquisti",
+				"name": "Copy_JSON2Cosmos_T_Vendite",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "T_AcquistiSQL2JSON",
+						"activity": "T_VenditeSQL2JSON",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -150,7 +150,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Copy_JSON2Cosmos_T_Acquisti",
+						"activity": "Copy_JSON2Cosmos_T_Vendite",
 						"dependencyConditions": [
 							"Succeeded"
 						]
