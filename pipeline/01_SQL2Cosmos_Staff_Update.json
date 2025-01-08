@@ -206,7 +206,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
-						"query": "SELECT * FROM c WHERE c.modelname='staff' and c.sqlid",
+						"query": "SELECT * FROM c WHERE c.modelname='staff' and c.sqlid>=",
 						"preferredRegions": []
 					},
 					"sink": {
