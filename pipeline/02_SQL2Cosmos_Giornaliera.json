@@ -183,6 +183,74 @@
 						"enablePartitionDiscovery": false
 					}
 				}
+			},
+			{
+				"name": "Update_JSON_SQL2Cosmos-Anagrafica",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"query": "SELECT * FROM c WHERE c.modelname='giornaliera'",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['modelname']"
+								},
+								"sink": {
+									"name": "modelname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['sqlid']"
+								},
+								"sink": {
+									"name": "IdSQL"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbGiornaliera",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSql_SQL2Cosmos",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
