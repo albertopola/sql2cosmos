@@ -185,7 +185,7 @@
 				}
 			},
 			{
-				"name": "Update_JSON_SQL2Cosmos-Anagrafica",
+				"name": "Update_JSON_SQL2Cosmos-Giornaliera",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
