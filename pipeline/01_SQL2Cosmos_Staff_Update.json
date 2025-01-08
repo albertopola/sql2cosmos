@@ -193,12 +193,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "CantierePersone_SQL2JSON",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"policy": {
@@ -212,7 +206,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbSqlApiSource",
-						"query": "SELECT * FROM c WHERE c.modelname='staff' and c.sqlid>=",
+						"query": "SELECT * FROM c WHERE c.modelname='staff'",
 						"preferredRegions": []
 					},
 					"sink": {
