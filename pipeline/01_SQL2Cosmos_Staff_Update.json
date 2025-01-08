@@ -24,7 +24,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='staff', \r\n     o.[IdPersona] as sqlid,\r\n     o.[Persona] as name,\r\n     o.[Operativo]  as isactive ,\r\n     o.[Interno]   as isinternal,\r\n     o.[CF] as cf ,\r\n     o.[DataNascita] as birthdate,\r\n     o.[LuogoNascita]  as birthplace,\r\n     o.[Telefono]  as tel,\r\n     o.[Cellulare]  as mobile,\r\n     o.[Indirizzo]  as address,\r\n     o.[Comune] AS city,\r\n     o.[Provincia] as region,\r\n     o.[CAP] as zip\r\n\r\n  FROM [dbo].[CantierePersone] as o\r\n FOR JSON PATH)\r\n)",
+						"sqlReaderQuery": "SELECT [value] FROM OPENJSON(\r\n(\r\nSELECT modelname='staff', \r\n     o.[IdPersona] as sqlid,\r\n     o.[Persona] as name,\r\n     o.[Operativo]  as isactive ,\r\n     o.[Interno]   as isinternal,\r\n     o.[CF] as cf ,\r\n     o.[DataNascita] as birthdate,\r\n     o.[LuogoNascita]  as birthplace,\r\n     o.[Telefono]  as tel,\r\n     o.[Cellulare]  as mobile,\r\n     o.[Indirizzo]  as address,\r\n     o.[Comune] AS city,\r\n     o.[Provincia] as region,\r\n     o.[CAP] as zip\r\n\r\n  FROM [dbo].[CantierePersone] as o\r\n  where CAST(o.[IdPersona] as INT) > (select MAX(CAST(IdSQL AS INT)) from dbo.SQL2Cosmos where modelname='staff') --RIGA PER NON SOVRASCRIVERE\r\n FOR JSON PATH)\r\n)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
