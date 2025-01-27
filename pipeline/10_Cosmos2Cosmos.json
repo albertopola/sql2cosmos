@@ -33,7 +33,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "CosmosDbNoSqlContainer1",
+						"referenceName": "CosmosDbTest",
 						"type": "DatasetReference"
 					}
 				]
@@ -51,8 +51,28 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbT_Appalti",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbTest",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
