@@ -223,8 +223,28 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "CosmosDbSqlApiSource",
+						"preferredRegions": []
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "CosmosDbT_Vendite",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CosmosDbTest",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
